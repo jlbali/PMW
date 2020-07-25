@@ -44,5 +44,8 @@ pip install GDAL==$(gdal-config --version | awk -F'[.]' '{print $1"."$2}')
 
 Prompt should reflect the change by showing "env"
 
+### Scripts
 
+Exp1.py runs the first experiment shown in the paper: "Spatial Correlation Scenario". Exp2.py runst the second experiment: "Observational Error Scenario".
+You must configure in those files the desired band and the parameters of the experiment, like the number of samples per image.
 
