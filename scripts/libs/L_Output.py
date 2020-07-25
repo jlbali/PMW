@@ -9,8 +9,8 @@ from __future__ import division
 import matplotlib.pyplot as plt
 import csv
 import os
-import L_SHP
-import L_TIF
+import libs.L_SHP as L_SHP
+import libs.L_TIF as L_TIF
 import sys
 import numpy as np
 

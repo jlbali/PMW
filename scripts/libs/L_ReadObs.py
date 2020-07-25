@@ -12,10 +12,10 @@ import h5py as hdf
 #uncomment to read AMSRE files
 #from pyhdf.SD import SD, SDC
 import sys
-import L_GeoCorr
-import L_Files
-import L_Kernels as L_Kernels
-import L_Context
+import libs.L_GeoCorr as L_GeoCorr
+import libs.L_Files as L_Files
+import libs.L_Kernels as L_Kernels
+import libs.L_Context as L_Context
 import logging
 import time
 

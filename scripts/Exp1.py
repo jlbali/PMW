@@ -2,8 +2,8 @@
 # EXPERIMENTO 1
 
 Band = 'KU'
-tot_img_samples=3 #CANTIDAD DE IMAGENES SINTETICAS GENERADAS
-tot_obs_samples=3 #CANTIDAD DE OBS SINTETICAS GENERADAS por IMG
+tot_img_samples=1 #CANTIDAD DE IMAGENES SINTETICAS GENERADAS
+tot_obs_samples=1 #CANTIDAD DE OBS SINTETICAS GENERADAS por IMG
 
 
 
@@ -31,7 +31,7 @@ ESTE ESTA ANDANDO MEDIO RARO
 
 #import my_base_dir
 #BASE_DIR = my_base_dir.get()
-BASE_DIR="/home/lbali/PMW-Tychonov/"
+BASE_DIR="../"
 csv_dir=BASE_DIR + 'Output/'
 
 #Import libraries
@@ -124,7 +124,7 @@ df = pd.DataFrame(columns=columnas)
 
 
 for MAPA in MAPAS:
-    wdir=BASE_DIR + 'Mapas/%s/'%MAPA
+    wdir=BASE_DIR + 'maps/%s/'%MAPA
     Context=L_Context.Load_Context(wdir, NeighborsBehaviour)
     print("Contexto cargado en", wdir)
     #print("Context", Context)
@@ -230,49 +230,4 @@ for MAPA in MAPAS:
                         
 
 df.to_csv(csv_dir + csv_name + '.csv')
-
-sys.exit(0)            
-
-#dg=df.copy()
-dg = pd.read_csv(csv_dir + csv_name + ".csv")
-#dg.groupby(['Method','Band','Pol']).mean()['RMSE']
-#dg = dg.groupby(['CellSize', 'Band', 'Method', 'mix_ratio']).mean()[['RMSE','RMSE_C0','RMSE_L0','RMSE_C1','RMSE_L1']]
-dg = dg.groupby(['CellSize', 'Band', 'Method', 'mix_ratio'])['RMSE'].mean()
-for MAPA in MAPAS:
-    km=int(MAPA[4:6])
-    print("Mapa: " + MAPA)
-    for Band in Bands:
-        print("Banda: " + Band)
-        fig, ax = plt.subplots()
-        #plt.ylim((0,10))
-        for Method in Methods:
-            serie = []
-            for mix_ratio in mix_ratios:
-                serie.append(dg[km, Band, Method, mix_ratio])
-            ax.plot(mix_ratios, serie, label=Method)
-        legend = ax.legend(loc='best', shadow=True, fontsize='x-large') 
-        plt.title("Banda: " + Band + " Base Type: " + base_type)
-        plt.savefig(csv_dir + "Imgs/" + Band + "_" + base_type + ".jpg")
-        plt.show()
-        
-
-"""
-km = 25
-Band = "C"
-fig, ax = plt.subplots()
-plt.ylim((0,10))
-for Method in Methods:
-    serie = []
-    for mix_ratio in mix_ratios:
-        serie.append(dg[km, Band, Method, mix_ratio])
-    ax.plot(mix_ratios, serie, label=Method)
-legend = ax.legend(loc='best', shadow=True, fontsize='x-large') 
-plt.show()
-"""
-
-                
-        
-
-
-#%%
 

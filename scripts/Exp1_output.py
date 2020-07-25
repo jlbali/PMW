@@ -16,7 +16,7 @@ import pandas as pd
 
 
 
-BASE_DIR="/home/lbali/proyectos/Gits/PMW-Tychonov/"
+BASE_DIR="../"
 csv_dir=BASE_DIR + 'Output/'
 
 

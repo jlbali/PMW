@@ -44,7 +44,7 @@ ESTE ESTA ANDANDO MEDIO RARO
 
 #import my_base_dir
 #BASE_DIR = my_base_dir.get()
-BASE_DIR="/home/rgrimson/Projects/PMW_Tychonov/"
+BASE_DIR="../"
 csv_dir=BASE_DIR + 'Output/'
 
 #Import libraries
@@ -141,7 +141,7 @@ df = pd.DataFrame(columns=columnas)
 
 
 for MAPA in MAPAS:
-    wdir=BASE_DIR + 'Mapas/%s/'%MAPA
+    wdir=BASE_DIR + 'maps/%s/'%MAPA
     Context=L_Context.Load_Context(wdir, NeighborsBehaviour)
     print("Contexto cargado en", wdir)
     #print("Context", Context)

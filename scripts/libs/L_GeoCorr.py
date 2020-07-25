@@ -8,7 +8,7 @@ Created on Sun Jul  2 13:27:16 2017
 from __future__ import division
 import numpy as np
 import sys
-import L_Kernels as L_Kernels
+import libs.L_Kernels as L_Kernels
 from scipy.sparse.linalg import lsqr
 
 #%%############################################################################

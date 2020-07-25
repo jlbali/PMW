@@ -17,7 +17,7 @@ from scipy.sparse.linalg import lsqr
 from scipy.stats import multivariate_normal
 from scipy.optimize import minimize
 from itertools import product
-import L_ParamEst
+import libs.L_ParamEst as L_ParamEst
 import copy
 import sys
 import logging

@@ -8,5 +8,6 @@ statsmodels
 shapely
 utm
 h5py
+fiona
 
 

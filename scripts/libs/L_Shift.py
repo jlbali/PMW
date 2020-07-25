@@ -7,11 +7,11 @@ Created on Fri Mar 23 16:53:15 2018
 from __future__ import print_function
 #uncomment to read AMSRE files
 #from pyhdf.SD import SD, SDC
-import L_Files
-import L_Kernels as L_Kernels
+import libs.L_Files as L_Files
+import libsL_Kernels as L_Kernels
 import logging
 import time
-import L_ReadObs
+import libs.L_ReadObs as L_ReadObs
 import copy
 
 

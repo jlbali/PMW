@@ -19,7 +19,7 @@ import numpy as np
 from scipy.stats import multivariate_normal
 import sys
 from scipy.sparse.linalg import lsqr
-import L_Context
+import libs.L_Context as L_Context
 
 from scipy.ndimage import rotate as imrotate
 from scipy.ndimage import shift as imshift

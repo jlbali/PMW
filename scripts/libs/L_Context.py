@@ -9,13 +9,13 @@ from __future__ import print_function
 from __future__ import division
 import numpy as np
 import utm
-from L_TIF import loadStackAndGeoTransform
-from L_TIF import loadStack
+from libs.L_TIF import loadStackAndGeoTransform
+from libs.L_TIF import loadStack
 import ogr
 import os
 
-import L_SHP
-import L_Files
+import libs.L_SHP as L_SHP
+import libs.L_Files as L_Files
 
 #%%############################################################################
 #%                                                                           %#
@@ -33,8 +33,8 @@ COMPUTE_IF_NECESSARY = 4
 
 def Load_Context(wdir, ComputeNeighbors=COMPUTE_IF_NECESSARY):
     #runfile('/home/rgrimson/Dropbox/Code/PMW/Scripts/ProcessHDF.py', wdir=r'/home/rgrimson/Dropbox/Code/PMW/Scripts')
-    os.chdir(wdir)
-    Param=read_param()
+    #os.chdir(wdir)
+    Param=read_param(wdir+"param.txt")
     path=wdir
     Param['path']=wdir
     gpath=path+'Grids/'
