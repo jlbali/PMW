@@ -32,7 +32,7 @@ ESTE ESTA ANDANDO MEDIO RARO
 #import my_base_dir
 #BASE_DIR = my_base_dir.get()
 BASE_DIR="../"
-csv_dir=BASE_DIR + 'Output/'
+csv_dir=BASE_DIR + 'outputs/'
 
 #Import libraries
 import copy

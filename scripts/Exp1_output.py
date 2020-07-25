@@ -17,7 +17,7 @@ import pandas as pd
 
 
 BASE_DIR="../"
-csv_dir=BASE_DIR + 'Output/'
+csv_dir=BASE_DIR + 'outputs/'
 
 
 #csv_name ='simple_Trigonometric_sigmas'

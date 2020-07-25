@@ -4,8 +4,8 @@
 # EXPERIMENTO 2
 
 Band='C'
-tot_img_samples=3 #CANTIDAD DE IMAGENES SINTETICAS GENERADAS
-tot_obs_samples=3 #CANTIDAD DE OBS SINTETICAS GENERADAS por IMG
+tot_img_samples=1 #CANTIDAD DE IMAGENES SINTETICAS GENERADAS
+tot_obs_samples=1 #CANTIDAD DE OBS SINTETICAS GENERADAS por IMG
 
 
 
@@ -45,7 +45,7 @@ ESTE ESTA ANDANDO MEDIO RARO
 #import my_base_dir
 #BASE_DIR = my_base_dir.get()
 BASE_DIR="../"
-csv_dir=BASE_DIR + 'Output/'
+csv_dir=BASE_DIR + 'outputs/'
 
 #Import libraries
 import copy
