@@ -1,0 +1,35 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Sun Nov 24 20:19:21 2019
+
+@author: rgrimson
+"""
+
+import numpy as np
+
+N = 1000000  # number of buses
+tau = 10  # average minutes between arrivals
+
+rand = np.random.RandomState(42)  # universal random seed
+bus_arrival_times = N * tau * np.sort(rand.rand(N))
+
+
+intervals = np.diff(bus_arrival_times)
+intervals.mean()
+
+def simulate_wait_times(arrival_times,
+                        rseed=8675309,  # Jenny's random seed
+                        n_passengers=1000000):
+    rand = np.random.RandomState(rseed)
+    
+    arrival_times = np.asarray(arrival_times)
+    passenger_times = arrival_times.max() * rand.rand(n_passengers)
+
+    # find the index of the next bus for each simulated passenger
+    i = np.searchsorted(arrival_times, passenger_times, side='right')
+
+    return arrival_times[i] - passenger_times
+
+wait_times = simulate_wait_times(bus_arrival_times)
+wait_times.mean()

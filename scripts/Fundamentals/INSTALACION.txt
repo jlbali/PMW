@@ -1,0 +1,161 @@
+
+1) Instalado pip y easy_install
+
+sudo apt-get install python-setuptools python-pip
+
+2) Instalar virtualenv y su wrapper.
+
+a) Paquetes:
+
+sudo pip install virtualenv
+
+sudo easy_install virtualenvwrapper
+
+b) configuración
+
+export WORKON_HOME=~/venvs
+mkdir $WORKON_HOME
+source /usr/local/bin/virtualenvwrapper.sh
+
+c) Crear un virtual environment adecuado.
+
+mkvirtualenv Humedales
+
+d) Configurar el .bashrc
+
+echo "export WORKON_HOME=$WORKON_HOME" >> ~/.bashrc
+
+3) Activar el Virtual Environment.
+
+workon Humedales
+
+4) Instalar herramientas necesarias de Python.
+
+sudo apt-get install -y python-dev
+
+5) Estando en el Environment "GeoPython", efectuar:
+
+pip install numpy
+
+pip install pyproj
+
+6) Requirements.
+
+a) Bajar a arhcivo lo actual:
+
+pip freeze > requirements.txt
+
+b) Instalar de requirements.
+
+pip install -r /path/to/requirements.txt
+
+7) Otros prerrequisitos de sistema:
+
+sudo apt-get install freetype* libpng-dev libjpeg8-dev
+
+8) Shapely, matplotlib, descartes.
+
+pip install shapely
+pip install matplotlib
+pip install descartes
+
+9) pyshp, geojson, pandas
+
+pip install pyshp
+pip install geojson
+pip install pandas
+
+10) Prolegómenos para otras cosas...
+
+sudo apt-get install libblas-dev liblapack-dev gfortran
+
+11) SciPy, PySAL, IPython
+
+pip install scipy
+pip install pysal
+pip install ipython
+
+12) GDAL y OGR
+
+sudo apt-get install -y build-essential libxml2-dev libxslt1-dev
+
+(hay error en el libro, le falta un espacio)
+
+sudo apt-get install libgdal-dev
+
+sudo apt-get install python-gdal
+
+13) GDAL en el virtual environment.
+
+toggleglobalsitepackages
+
+14) GeoDjando y PostGIS... suspendidos por ahora
+(página 19)
+
+15) (extras, chapter 2)
+
+pip install owslib
+
+pip install fiona
+
+pip install utm
+
+pip install h5py
+
+
+PROLEGOMENOS SUDO 
+
+sudo apt-get install python-setuptools python-pip
+
+sudo pip install virtualenv
+
+sudo easy_install virtualenvwrapper
+
+sudo apt-get install -y python-dev
+
+sudo apt-get install freetype* libpng-dev libjpeg8-dev
+
+sudo apt-get install libblas-dev liblapack-dev gfortran
+
+sudo apt-get install -y build-essential libxml2-dev libxslt1-dev
+
+sudo apt-get install libgdal-dev
+
+sudo apt-get install python-gdal
+
+REQUIREMENTS
+
+Estando en un virtualenv
+
+a) Bajar a arhcivo lo actual:
+
+pip freeze > requirements.txt
+
+b) Instalar de requirements.
+
+pip install -r /path/to/requirements.txt
+
+
+
+
+DIRECTORIOS
+
+Archivos ProcessHDF.py
+y /PMW_Fresh/param.txt.
+
+
+
+
+-----------------------
+
+
+página 30 del libro de Pythons GeoSpatial Analysis de Diener.
+
+Es bueno porque es claro en la instalación mediante el uso de virtual environments, lo que lo hace más prolijo.
+
+
+Viendo el libro de Lawhead.
+
+
+
+
