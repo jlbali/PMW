@@ -3,7 +3,7 @@
 
 # EXPERIMENTO 2
 
-Band='C'
+Band='KU'
 tot_img_samples=1 #CANTIDAD DE IMAGENES SINTETICAS GENERADAS
 tot_obs_samples=1 #CANTIDAD DE OBS SINTETICAS GENERADAS por IMG
 
@@ -260,106 +260,4 @@ for MAPA in MAPAS:
 
 df.to_csv(csv_dir + csv_name + '.csv')
             
-
-
-sys.exit(1)
-#dg=df.copy()
-dg = pd.read_csv(csv_dir + csv_name + ".csv")
-#dg.groupby(['Method','Band','Pol']).mean()['RMSE']
-#dg = dg.groupby(['CellSize', 'Band', 'Method', 'mix_ratio']).mean()[['RMSE','RMSE_C0','RMSE_L0','RMSE_C1','RMSE_L1']]
-dg = dg.groupby(['CellSize', 'Band', 'Method', 'mix_ratio', 'Obs_std_error'])['RMSE'].mean()
-for MAPA in MAPAS:
-    km=int(MAPA[4:6])
-    print("Mapa: " + MAPA)
-    for Band in Bands:
-        print("Banda: " + Band)
-        fig, ax = plt.subplots()
-        #plt.ylim((0,10))
-        for Method in Methods:
-            serie = []
-            for Obs_std in Obs_errors:
-                serie.append(dg[km, Band, Method, 0.5, Obs_std])
-            ax.plot(Obs_errors, serie, label=Method)
-        legend = ax.legend(loc='best', shadow=True, fontsize='x-large') 
-        plt.title("Banda: " + Band + " Base Type: " + base_type)
-        plt.savefig(csv_dir + "Imgs/" + Band + "_" + base_type + ".jpg")
-        plt.show()
-
-
-# Gráficos de errores relativos.
-
-dg = pd.read_csv(csv_dir + csv_name + ".csv")
-#dg.groupby(['Method','Band','Pol']).mean()['RMSE']
-#dg = dg.groupby(['CellSize', 'Band', 'Method', 'mix_ratio']).mean()[['RMSE','RMSE_C0','RMSE_L0','RMSE_C1','RMSE_L1']]
-dg = dg.groupby(['CellSize', 'Band', 'Method', 'mix_ratio', 'Obs_std_error'])['RMSE'].mean()
-for MAPA in MAPAS:
-    km=int(MAPA[4:6])
-    print("Mapa: " + MAPA)
-    for Band in Bands:
-        print("Banda: " + Band)
-        fig, ax = plt.subplots()
-        #plt.ylim((0,10))
-        serie1 = []
-        serie2 = []
-        for Obs_std in Obs_errors:
-            err_EM = dg[km, Band, "EM", 1.0, Obs_std]
-            err_EM_Adj = dg[km, Band, "EM_Adapt", 1.0, Obs_std]
-            err_Tych = dg[km, Band, "GCV_Tichonov", 1.0, Obs_std]
-            serie1.append(err_EM / err_Tych)
-            serie2.append(err_EM_Adj / err_Tych)
-        ax.plot(Obs_errors, serie1, label="EM / Tych")
-        ax.plot(Obs_errors, serie2, label="EM_Adj / Tych")
-        legend = ax.legend(loc='best', shadow=True, fontsize='x-large') 
-        plt.title("Banda: " + Band + " Base Type: " + base_type)
-        plt.savefig(csv_dir + "Imgs/" + Band + "_" + base_type + ".jpg")
-        plt.show()
-
-
-sys.exit(1)
-
-
-
-#%%
-dg = pd.read_csv(csv_dir + csv_name + ".csv")
-#dg.groupby(['Method','Band','Pol']).mean()['RMSE']
-#dg = dg.groupby(['CellSize', 'Band', 'Method', 'mix_ratio']).mean()[['RMSE','RMSE_C0','RMSE_L0','RMSE_C1','RMSE_L1']]
-dg = dg.groupby(['CellSize', 'Band', 'Method', 'mix_ratio', 'Obs_std_error'])['RMSE'].mean()
-for MAPA in MAPAS:
-    km=int(MAPA[4:6])
-    print("Mapa: " + MAPA)
-    for Band in Bands:
-        print("Banda: " + Band)
-        fig, ax = plt.subplots()
-        #plt.ylim((0,10))
-        for Method in Methods:
-            serie = []
-            for Obs_std in Obs_errors:
-                serie.append(dg[km, Band, Method, 1.0, Obs_std])
-            ax.plot(Obs_errors[3:6], serie[3:6], label=Method)
-        legend = ax.legend(loc='best', shadow=True, fontsize='x-large') 
-        plt.title("Banda: " + Band + " Base Type: " + base_type)
-        plt.savefig(csv_dir + "Imgs/" + Band + "_" + base_type + ".jpg")
-        plt.show()
-
-#%%
-dg = pd.read_csv(csv_dir + csv_name + ".csv")
-#dg.groupby(['Method','Band','Pol']).mean()['RMSE']
-#dg = dg.groupby(['CellSize', 'Band', 'Method', 'mix_ratio']).mean()[['RMSE','RMSE_C0','RMSE_L0','RMSE_C1','RMSE_L1']]
-dg = dg.groupby(['CellSize', 'Band', 'Method', 'mix_ratio', 'Obs_std_error'])['RMSE'].mean()
-for MAPA in MAPAS:
-    km=int(MAPA[4:6])
-    print("Mapa: " + MAPA)
-    for Band in Bands:
-        print("Banda: " + Band)
-        fig, ax = plt.subplots()
-        #plt.ylim((0,10))
-        for Method in Methods[:3]:
-            serie = []
-            for Obs_std in Obs_errors:
-                serie.append(dg[km, Band, Method, 1.0, Obs_std])
-            ax.plot(np.log10(Obs_errors[2:7]), serie[2:7], label=Method)
-        legend = ax.legend(loc='best', shadow=True, fontsize='x-large') 
-        plt.title("Banda: " + Band + " Base Type: " + base_type)
-        plt.savefig(csv_dir + "Imgs/" + Band + "_" + base_type + ".jpg")
-        plt.show()
 
