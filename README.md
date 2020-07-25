@@ -1,9 +1,4 @@
-# Python Data Science Template
-
-
-
-sudo apt-get install python3-dev
-sudo apt-get install cmake (para xgboost.. igual da problemas)
+# Passive Microwave Library of Regridding Methods
 
 
 ## Workflow:
