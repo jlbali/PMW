@@ -1,15 +1,22 @@
 
-# EXPERIMENTO 1
 
-Band = 'KU'
+
+# EXPERIMENTO 2
+
+Band='C'
 tot_img_samples=3 #CANTIDAD DE IMAGENES SINTETICAS GENERADAS
 tot_obs_samples=3 #CANTIDAD DE OBS SINTETICAS GENERADAS por IMG
 
 
 
 
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Oct 14 17:54:47 2019
 
-
+@author: rgrimson
+"""
 
 # -*- coding: utf-8 -*-
 """
@@ -29,19 +36,25 @@ Para que librería hdf5 ande en el Anaconda es preciso tener la última versión
 ESTE ESTA ANDANDO MEDIO RARO
 """
 
+#import os
+
+#os.environ['LD_LIBRARY_PATH'] = "/home/rgrimson/anaconda3/pkgs/hdf5-1.10.1-h9caa474_1/lib:/usr/local/lib:/home/rgrimson/anaconda3/lib"
+
+#print("Environment: ", os.environ['LD_LIBRARY_PATH'])
+
 #import my_base_dir
 #BASE_DIR = my_base_dir.get()
-BASE_DIR="/home/lbali/PMW-Tychonov/"
+BASE_DIR="/home/rgrimson/Projects/PMW_Tychonov/"
 csv_dir=BASE_DIR + 'Output/'
 
 #Import libraries
 import copy
-import L_ReadObs
-import L_Context
-import L_Output
-import L_NewSolvers
-import L_ParamEst
-import L_Syn_Img
+import libs.L_ReadObs as L_ReadObs
+import libs.L_Context as L_Context
+import libs.L_Output as L_Output
+import libs.L_NewSolvers as L_NewSolvers
+import libs.L_ParamEst as L_ParamEst
+import libs.L_Syn_Img as L_Syn_Img
 import numpy as np
 import pandas as pd
 import time
@@ -57,21 +70,18 @@ import matplotlib.pyplot as plt
 HDFfilename='GW1AM2_201207310439_227D_L1SGBTBR_2210210'
 NeighborsBehaviour = L_Context.COMPUTE_IF_NECESSARY
 #csv_name ='simple_Trigonometric_2'
-csv_name ='exp1_' + Band
-
-Bands = [Band]
+csv_name ='exp2_' + Band
 
 #%%
-
 MAPAS=['LCA_12500m','LCA_25000m','LCA_50000m']
 MAPAS=['LCA_50000m','LCA_25000m','LCA_12500m']
 MAPAS=['LCA_25000m'] # Solo para trigonometric.
 #MAPAS=['Reg25'] # Solo para bimodal.
 
 
-#Methods = ['LSQR','Weights','EM','Rodgers_IT','Global_GCV_Tichonov','BGF']
+Methods = ['LSQR','Weights','EM','Rodgers_IT','Global_GCV_Tichonov','BGF']
 #Methods = ['EM','BGF','LSQR']
-Methods = ['EM','GCV_Tichonov','LSQR']
+Methods = ['EM','EM_Adapt','GCV_Tichonov','LSQR']
 
 
 #Bands=['KA','KU','K','X','C']
@@ -80,13 +90,15 @@ Methods = ['EM','GCV_Tichonov','LSQR']
 #Bands=[ 'KU']
 #Bands=['KA','KU','K','X','C']
 #Bands=['K']
+Bands=[Band]
 #base_type = "TRIGONOMETRIC_ONE_TYPE"
 base_type = "TRIGONOMETRIC_TWO_TYPES" # Usar mapas LCA para esto.
 #base_type = "BIMODAL"  # Usar mapas Reg para esto.
 #tipo ="RANDOM"
 #tipo = "MIXED"
 #mix_ratios = [1.0]
-mix_ratios = np.linspace(0.0, 1.0, 11)
+mix_ratios = [0.5]
+#mix_ratios = np.linspace(0.0, 1.0, 10)
 #mix_ratios = [0.0, 1.0]
 
 
@@ -94,7 +106,12 @@ mix_ratios = np.linspace(0.0, 1.0, 11)
 #Obs_errors = [0.25, 0.5,1.0, 2.0,4.0]
 #Obs_errors = [1.0]
 #Obs_errors = [2.0]
-Obs_errors = [1.0]
+#Obs_errors = [0.25]
+#Obs_errors = [1e-3, 1e-2, 1e-1, 0.25, 0.5, 1.0, 2.0, 5.0, 10.0, 20.0]
+#Obs_errors = [1e-3, 1e-2, 1e-1, 0.25, 0.3, 0.4, 0.5, 0.6,0.7, 0.8, 0.9, 1.0, 1.1, 1.2,1.3,1.4,1.5,1.7,1.85, 2.0, 5.0, 10.0, 20.0]
+#Obs_errors = np.linspace(0.1, 2.0, 20)
+Obs_errors = np.linspace(0.1, 2.0, 10)
+#Obs_errors = [1.0]
 # Para probar con distintos obs_errors... por màs y por menos.
 
 export_solutions = False
@@ -132,10 +149,6 @@ for MAPA in MAPAS:
     #print("sdfsdf: ", Context['Dict_Vars'].keys())
     VType = Context['Dict_Vars']["VType"]
     neighbors = Context["Neighbors"]
-    extras ={ 
-        "neighbors": neighbors,
-        "obsstd": 1.0,        
-    }
 
     L_Syn_Img.Set_Margins(Context)
     print("Margenes setados para mapa", MAPA)
@@ -143,7 +156,13 @@ for MAPA in MAPAS:
     Observations = {}
     titas = {}
     v_errs = {}
+    extras ={ 
+        "neighbors": neighbors,
+        "obsstd": 1.0,        
+    }                  
+    print("Precomputo de bandas")
     for Band in Bands:
+        print("Banda ", Band)
         Observation, tita=L_ReadObs.Load_PKL_or_Compute_Kernels(HDFfilename,Context,Band,GC=True)
         Observations[Band] = Observation
         titas[Band] = tita
@@ -156,8 +175,9 @@ for MAPA in MAPAS:
             for n_obs in range(tot_obs_samples):
                 v_err=np.random.normal(0,Obs_std,n_ell)
                 v_errs[Band][Obs_std].append(v_err)
-
+    print("Fin precomputo de bandas")
     for n_img in range(tot_img_samples):
+        print("n_img", n_img)
         if base_type == "BIMODAL":
             #Tb_base = L_Syn_Img.Create_Bimodal_Synth_Img(Context, mu=180, sdev=0.3)
             Tb_base = L_Syn_Img.Create_True_Bimodal_Synth_Img(Context)
@@ -174,6 +194,7 @@ for MAPA in MAPAS:
         
         
         for mix_ratio in mix_ratios:
+            print("Mix ratio: ", mix_ratio)
             """            
             if base_type == "BIMODAL":
                  Tb = Tb_base + (1-mix_ratio)*Tb_random
@@ -187,26 +208,34 @@ for MAPA in MAPAS:
         
 
             for Band in Bands:
+                print("Band", Band)
                 Observation = Observations[Band]
                 tita = titas[Band]
                 print("Banda", Band, "cargada")
                 K=Observation['Wt']
                 n_ell = K.shape[0]
                 n_cells = K.shape[1]
-            
                 for Obs_std in Obs_errors:
+                   print("Obs_std", Obs_std)
                    titaReal=copy.deepcopy(L_ParamEst.Compute_NoPol_param(Tb,VType))
                    for n_obs in range(tot_obs_samples):
+                        print("n_obs", n_obs)
                         v_err=v_errs[Band][Obs_std][n_obs]
                         Tb_sim=L_Syn_Img.Simulate_NoPol_PMW(K,Tb,Obs_error_std=0)
                         Tb_sim+=v_err
-                        for Method in Methods:
-        
-        
+                        for Method in Methods:        
+                            print("Method", Method)
                             t_inicial = time.time()                
                             #corrergir esto!!!
-    
-                            Sol=L_NewSolvers.Solve(VType, K, Tb_sim, Method, extras)
+                            extras_adapt ={ 
+                                "neighbors": neighbors,
+                                "obsstd": Obs_std        
+                            }                  
+
+                            if Method == "EM_Adapt":
+                                Sol=L_NewSolvers.Solve(VType, K, Tb_sim, "EM", extras_adapt)
+                            else:
+                                Sol=L_NewSolvers.Solve(VType, K, Tb_sim, Method, extras)
                 
                             t_final = time.time()
                             t = t_final - t_inicial
@@ -221,7 +250,7 @@ for MAPA in MAPAS:
                               'time':t}
                             df = df.append(dic, ignore_index=True)
             
-                            print('termino:',km,Band,Method,Obs_std,n_img,n_obs)
+                            #print('termino:',km,Band,Method,Obs_std,n_img,n_obs)
                             if export_solutions:
                                 Sol = [Sol, Sol]
                                 L_Output.Export_Solution(Sol, Context, Band, 'S_'+str(km)+'_'+Band+'_'+Method+str(n_img)+'_'+str(n_obs)+'_'+str(Obs_std).replace('.','_') + "_"  +str(mix_ratio).replace('.','_') )
@@ -230,14 +259,15 @@ for MAPA in MAPAS:
                         
 
 df.to_csv(csv_dir + csv_name + '.csv')
+            
 
-sys.exit(0)            
 
+sys.exit(1)
 #dg=df.copy()
 dg = pd.read_csv(csv_dir + csv_name + ".csv")
 #dg.groupby(['Method','Band','Pol']).mean()['RMSE']
 #dg = dg.groupby(['CellSize', 'Band', 'Method', 'mix_ratio']).mean()[['RMSE','RMSE_C0','RMSE_L0','RMSE_C1','RMSE_L1']]
-dg = dg.groupby(['CellSize', 'Band', 'Method', 'mix_ratio'])['RMSE'].mean()
+dg = dg.groupby(['CellSize', 'Band', 'Method', 'mix_ratio', 'Obs_std_error'])['RMSE'].mean()
 for MAPA in MAPAS:
     km=int(MAPA[4:6])
     print("Mapa: " + MAPA)
@@ -247,213 +277,89 @@ for MAPA in MAPAS:
         #plt.ylim((0,10))
         for Method in Methods:
             serie = []
-            for mix_ratio in mix_ratios:
-                serie.append(dg[km, Band, Method, mix_ratio])
-            ax.plot(mix_ratios, serie, label=Method)
+            for Obs_std in Obs_errors:
+                serie.append(dg[km, Band, Method, 0.5, Obs_std])
+            ax.plot(Obs_errors, serie, label=Method)
         legend = ax.legend(loc='best', shadow=True, fontsize='x-large') 
         plt.title("Banda: " + Band + " Base Type: " + base_type)
         plt.savefig(csv_dir + "Imgs/" + Band + "_" + base_type + ".jpg")
         plt.show()
-        
-
-"""
-km = 25
-Band = "C"
-fig, ax = plt.subplots()
-plt.ylim((0,10))
-for Method in Methods:
-    serie = []
-    for mix_ratio in mix_ratios:
-        serie.append(dg[km, Band, Method, mix_ratio])
-    ax.plot(mix_ratios, serie, label=Method)
-legend = ax.legend(loc='best', shadow=True, fontsize='x-large') 
-plt.show()
-"""
-
-                
-        
 
 
-#%%
+# Gráficos de errores relativos.
+
+dg = pd.read_csv(csv_dir + csv_name + ".csv")
+#dg.groupby(['Method','Band','Pol']).mean()['RMSE']
+#dg = dg.groupby(['CellSize', 'Band', 'Method', 'mix_ratio']).mean()[['RMSE','RMSE_C0','RMSE_L0','RMSE_C1','RMSE_L1']]
+dg = dg.groupby(['CellSize', 'Band', 'Method', 'mix_ratio', 'Obs_std_error'])['RMSE'].mean()
+for MAPA in MAPAS:
+    km=int(MAPA[4:6])
+    print("Mapa: " + MAPA)
+    for Band in Bands:
+        print("Banda: " + Band)
+        fig, ax = plt.subplots()
+        #plt.ylim((0,10))
+        serie1 = []
+        serie2 = []
+        for Obs_std in Obs_errors:
+            err_EM = dg[km, Band, "EM", 1.0, Obs_std]
+            err_EM_Adj = dg[km, Band, "EM_Adapt", 1.0, Obs_std]
+            err_Tych = dg[km, Band, "GCV_Tichonov", 1.0, Obs_std]
+            serie1.append(err_EM / err_Tych)
+            serie2.append(err_EM_Adj / err_Tych)
+        ax.plot(Obs_errors, serie1, label="EM / Tych")
+        ax.plot(Obs_errors, serie2, label="EM_Adj / Tych")
+        legend = ax.legend(loc='best', shadow=True, fontsize='x-large') 
+        plt.title("Banda: " + Band + " Base Type: " + base_type)
+        plt.savefig(csv_dir + "Imgs/" + Band + "_" + base_type + ".jpg")
+        plt.show()
 
 
-sys.exit(0)
-
-L_Output.Export_Solution(Sol, Context, Band, 'TestRafa')
-
-Reg=np.array(Context['Dict_Vars']['SqCell'])
-IReg=np.array([not r for r in Context['Dict_Vars']['SqCell']]) #irregular cell, frontier of LTs.
-Mar=np.array(Context['Dict_Vars']['Margin']) #a marginal cell, border of the image
-NMar=np.array([not m for m in Context['Dict_Vars']['Margin']]) #interior cell
-
-SolN=Sol.copy()
-SolN[Reg]=0
-L_Output.Export_Solution([SolN,SolN], Context, Band, 'TestRafa_Costa')
-
-SolN=SolH.copy()
-SolN[IReg]=0
-L_Output.Export_Solution([SolN,SolN], Context, Band, 'TestRafa_Reg')
-
-SolN=SolH.copy()
-SolN[Mar]=0
-L_Output.Export_Solution([SolN,SolN], Context, Band, 'TestRafa_NMar')
-
-SolN=SolH.copy()
-SolN[NMar]=0
-L_Output.Export_Solution([SolN,SolN], Context, Band, 'TestRafa_Mar')
-
-SolN=SolH.copy()
-SolN[Mar]=0
-SolN[Reg]=0
-L_Output.Export_Solution([SolN,SolN], Context, Band, 'TestRafa_CostaInterior')
-
-SolN=SolH.copy()
-SolN[Mar]=0
-SolN[IReg]=0
-L_Output.Export_Solution([SolN,SolN], Context, Band, 'TestRafa_LandInterior')
-
-#%%
-
-
-Reg=np.array(Context['Dict_Vars']['SqCell'])
-IReg=np.array([not r for r in Context['Dict_Vars']['SqCell']]) #irregular cell, frontier of LTs.
-Mar=np.array(Context['Dict_Vars']['Margin']) #a marginal cell, border of the image
-NMar=np.array([not m for m in Context['Dict_Vars']['Margin']]) #interior cell
-VType=Context['Dict_Vars']['VType']
-L0=np.array(VType==0)
-L1=np.array(VType==1)
-
-B0=(NMar*IReg*L0)
-B1=(NMar*IReg*L1)
-I0=(NMar*Reg*L0)
-I1=(NMar*Reg*L1)
-
-print(B0.sum())
-print(B1.sum())
-print(I0.sum())
-print(I1.sum())
-
-#%%
-def Metricas(Orig, Sol, Context, Margin=None, Regular=None, LT=None):
-    n_Vars=Context['Dict_Vars']['n_Vars']    
-    T=np.ones(n_Vars,dtype=bool)
-    if (Margin==None):
-        M=T
-    elif Margin:
-        M=np.array(Context['Dict_Vars']['Margin']) #a marginal cell, border of the image
-    else:
-        M=np.array([not m for m in Context['Dict_Vars']['Margin']]) #interior cell
-    if (Regular==None):
-        R=T
-    elif Regular:
-        R=np.array(Context['Dict_Vars']['SqCell']) #a square, regular cell, typically not land type frontier.
-    else:
-        R=np.array([not r for r in Context['Dict_Vars']['SqCell']]) #irregular cell, frontier of LTs.
-    if (LT==None):
-        L=T
-    else:
-        VType=Context['Dict_Vars']['VType']
-        L=np.array(VType==LT)
-    Cells=np.where(M*R*L)[0]
-    
-    return RMSE(Orig[Cells], Sol[Cells]),CC(Orig[Cells], Sol[Cells])
-
+sys.exit(1)
 
 
 
 #%%
-for sdev in [0.2,0.50,0.7,1,1.5]:
-  for alpha in [.1,.25,.33,.45]: 
-    print(sdev,alpha)
-    Tb_base = L_Syn_Img.Create_Bimodal_Synth_Img(Context, mu=180, sdev=sdev, alpha=alpha)
-    a = np.hstack(Tb_base)
-    _ = plt.hist(a, bins=20) 
-    plt.show() 
+dg = pd.read_csv(csv_dir + csv_name + ".csv")
+#dg.groupby(['Method','Band','Pol']).mean()['RMSE']
+#dg = dg.groupby(['CellSize', 'Band', 'Method', 'mix_ratio']).mean()[['RMSE','RMSE_C0','RMSE_L0','RMSE_C1','RMSE_L1']]
+dg = dg.groupby(['CellSize', 'Band', 'Method', 'mix_ratio', 'Obs_std_error'])['RMSE'].mean()
+for MAPA in MAPAS:
+    km=int(MAPA[4:6])
+    print("Mapa: " + MAPA)
+    for Band in Bands:
+        print("Banda: " + Band)
+        fig, ax = plt.subplots()
+        #plt.ylim((0,10))
+        for Method in Methods:
+            serie = []
+            for Obs_std in Obs_errors:
+                serie.append(dg[km, Band, Method, 1.0, Obs_std])
+            ax.plot(Obs_errors[3:6], serie[3:6], label=Method)
+        legend = ax.legend(loc='best', shadow=True, fontsize='x-large') 
+        plt.title("Banda: " + Band + " Base Type: " + base_type)
+        plt.savefig(csv_dir + "Imgs/" + Band + "_" + base_type + ".jpg")
+        plt.show()
+
 #%%
-
-sdev=0.5
-alpha=0.33
-Tb_base = L_Syn_Img.Create_Bimodal_Synth_Img(Context, mu=180, sdev=sdev, alpha=alpha)
-a = np.hstack(Tb_base)
-_ = plt.hist(a, bins=20) 
-plt.show() 
-L_Output.Export_Solution([Tb_base,Tb_base], Context, "RealBase", 'RealBase' )                                 
-
-
-
-import L_Syn_Img
-Tb_base = L_Syn_Img.Create_Bimodal_Synth_Img(Context, mu=180)
-a = np.hstack(Tb_base)
-_ = plt.hist(a, bins=40) 
-plt.show() 
-L_Output.Export_Solution([Tb_base,Tb_base], Context, "RealBase", 'RealBase' )                                 
-
-
-
-
-# BIMODAL
-import L_Syn_Img
-import L_Context
-import L_Output
-import numpy as np
-import pandas as pd
-import time
-import pickle
-import sys
-import matplotlib.pyplot as plt
-MAPA='Reg25' # Solo para bimodal.
-BASE_DIR="/home/lbali/PMW-Tychonov/"
-csv_dir=BASE_DIR + 'Output/'
-wdir=BASE_DIR + 'Mapas/%s/'%MAPA
-NeighborsBehaviour = L_Context.COMPUTE_IF_NECESSARY
-Context=L_Context.Load_Context(wdir, NeighborsBehaviour)
-Tb_base = L_Syn_Img.Create_Bimodal_Synth_Img(Context, mu=180, sdev=0.3)
-a = np.hstack(Tb_base)
-_ = plt.hist(a, bins=40) 
-plt.show() 
-L_Output.Export_Solution([Tb_base,Tb_base], Context, "RealBase", 'RealBase' )                                 
-
-
-# TRIGONOMETRIC
-import L_Syn_Img
-import L_Context
-import L_Output
-import numpy as np
-import pandas as pd
-import time
-import pickle
-import sys
-import matplotlib.pyplot as plt
-MAPA='LCA_25000m' # Solo para bimodal.
-BASE_DIR="/home/lbali/PMW-Tychonov/"
-csv_dir=BASE_DIR + 'Output/'
-wdir=BASE_DIR + 'Mapas/%s/'%MAPA
-NeighborsBehaviour = L_Context.COMPUTE_IF_NECESSARY
-Context=L_Context.Load_Context(wdir, NeighborsBehaviour)
-Tb_base = L_Syn_Img.Create_Trig_Synth_Img(Context)
-a = np.hstack(Tb_base)
-_ = plt.hist(a, bins=40) 
-plt.show() 
-L_Output.Export_Solution([Tb_base,Tb_base], Context, "RealBase", 'RealBase' )                                 
-
-
-# Random 180 para agua y random media 270 para tierra, es la situacion "ideal" para
-# el EM, que supone guassianidad INDEOENDIENTE en cada tipo de land type.
-# La estructura de correlaciòn espacial NO està incorporado en su modelo.
-# Histogramas suponen en algùn sentido cierta iid, y no es lo que ocurre.
-# No es la herramienta adecuada para visualizar resultados.
-
-"""
-El bimodal es "falso", el histograma no proviene de un sampleo iid sino que hay
-correlaciòn espacial entre los elementos. No es una muestra en el sentido estricto de la
-palabra, como para hablar de bimodalidad en la distribución.
-Cada píxel tiene su propia distribución y hay correlación espacial.
-El método EM debería primar en situaciones en donde hay IID normal en cada land type.
-La correlación espacial rompe esas hipótesis, por otro lado la manera de medir el error
-quizás debería ser relativo.
-
-No se puede inferir la distribuciòn de densidad de los pìxeles tomando a ellos como muestra
-pues no lo son, no provienen de un casi iid.
-
-"""
+dg = pd.read_csv(csv_dir + csv_name + ".csv")
+#dg.groupby(['Method','Band','Pol']).mean()['RMSE']
+#dg = dg.groupby(['CellSize', 'Band', 'Method', 'mix_ratio']).mean()[['RMSE','RMSE_C0','RMSE_L0','RMSE_C1','RMSE_L1']]
+dg = dg.groupby(['CellSize', 'Band', 'Method', 'mix_ratio', 'Obs_std_error'])['RMSE'].mean()
+for MAPA in MAPAS:
+    km=int(MAPA[4:6])
+    print("Mapa: " + MAPA)
+    for Band in Bands:
+        print("Banda: " + Band)
+        fig, ax = plt.subplots()
+        #plt.ylim((0,10))
+        for Method in Methods[:3]:
+            serie = []
+            for Obs_std in Obs_errors:
+                serie.append(dg[km, Band, Method, 1.0, Obs_std])
+            ax.plot(np.log10(Obs_errors[2:7]), serie[2:7], label=Method)
+        legend = ax.legend(loc='best', shadow=True, fontsize='x-large') 
+        plt.title("Banda: " + Band + " Base Type: " + base_type)
+        plt.savefig(csv_dir + "Imgs/" + Band + "_" + base_type + ".jpg")
+        plt.show()
 

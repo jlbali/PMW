@@ -51,39 +51,6 @@ mix_ratio = list(set(df["mix_ratio"]))[0]
 Bands = list(set(df["Band"]))
 
 print(Obs_errors)
-#for MAPA in MAPAS:
-#    km=int(MAPA[4:6])
-#    print("Mapa: " + MAPA)
-#    for Band in Bands:
-#        print("Banda: " + Band)
-#        fig, ax = plt.subplots()
-#        #plt.ylim((0,10))
-#        serie1 = []
-#        serie2 = []
-#        serie3 = []
-#        serie_base = []
-#        sigmas = []
-#        for Obs_std in Obs_errors:
-#            #if Obs_std < 0.1 or Obs_std > 2.0:
-#                #continue
-#            #Obs_std = 1.0
-#            err_LSQR = dg[km, Band, "LSQR", mix_ratio, Obs_std]
-#            err_EM = dg[km, Band, "EM", mix_ratio, Obs_std]
-#            err_EM_Adj = dg[km, Band, "EM_Adapt", mix_ratio, Obs_std]
-#            err_Tych = dg[km, Band, "GCV_Tichonov", mix_ratio, Obs_std]
-#            serie1.append(err_EM / err_Tych)
-#            serie2.append(err_EM_Adj / err_Tych)
-#            serie3.append(err_LSQR / err_Tych)
-#            serie_base.append(1.0)
-#            sigmas.append(Obs_std)
-#        ax.plot(sigmas, serie1, label="EM / Tych")
-#        ax.plot(sigmas, serie2, label="EM_Adj / Tych")
-#        ax.plot(sigmas, serie3, label="LSQR / Tych")
-#        ax.plot(sigmas, serie_base, label="Base")
-#        legend = ax.legend(loc='best', shadow=True, fontsize='x-large') 
-#        plt.title("Banda: " + Band + " Base Type: " + base_type)
-#        plt.savefig(csv_dir + "Imgs/" + Band + "_" + base_type + ".jpg")
-#        plt.show()
 
 linestyles = ['-', '--', '-.', ':']
 for MAPA in MAPAS:
