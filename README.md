@@ -49,3 +49,7 @@ Prompt should reflect the change by showing "env"
 Exp1.py runs the first experiment shown in the paper: "Spatial Correlation Scenario". Exp2.py runst the second experiment: "Observational Error Scenario".
 You must configure in those files the desired band and the parameters of the experiment, like the number of samples per image.
 
+run_sample.py offers a complete example of how to process an image. The output of this process will be saved on the Out_Grids and Imgs folders of the specified map configuration. TIFF, JPG and CSV files from the solution are generated.
+
+
+
